@@ -1,0 +1,72 @@
+- hosts: localhost
+  sudo: true
+  tasks:
+    - name: Install base packages for development
+      apt: name={{item}} state=latest update_cache=yes cache_valid_time=3600
+      with_items:
+        - alien
+        - build-essential
+        - checkinstall
+        - curl
+        - git
+        - git-extras
+        - libaio1
+        - libffi-dev
+        - libjpeg-dev
+        - libldap2-dev
+        - libpcre3-dev
+        - libreadline-dev
+        - libsasl2-dev
+        - libssl-dev
+        - libxml2-dev
+        - libxslt1-dev
+        - mercurial
+        - nodejs
+        - npm
+        - p7zip-full
+        - poppler-utils
+        - python-dev
+        - python-pip
+        - python-setuptools
+        - python-virtualenv
+        - python3-dev
+        - ranger
+        - subversion
+        - unixodbc-dev
+        - vim
+        - zlib1g-dev
+        - zsh
+
+    - name: Upgrade pre-installed pkgs
+      apt: upgrade=dist
+
+    - name: Create symlink for node.js
+      file: path=/usr/bin/node state=link src=/usr/bin/nodejs
+
+    - name: Install pkgs using npm
+      npm: global=yes name={{item}} state=latest
+      with_items:
+        - grunt-cli
+        - jsctags
+        - jshint
+
+    - name: Create buildout cache
+      file: path=/var/cache/buildout/{{item}} state=directory owner=root group=sudo mode=0777
+      with_items:
+        - eggs
+        - dlcache
+
+# INSTALL_PKGS --reinstall locales \
+#    && sudo localedef -v -c -i pt_BR -f UTF-8 pt_BR.UTF-8 \
+#    && sudo dpkg-reconfigure locales \
+
+## Create ssh key
+# if [ ! -f ~/.ssh/id_rsa.pub ]; then
+#     mkdir -p ~/.ssh
+#     ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa -q
+#     eval $(ssh-agent -s)
+#     ssh-add
+# fi
+
+# ## Clean cache
+# sudo apt-get clean
